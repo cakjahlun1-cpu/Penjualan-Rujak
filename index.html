@@ -3,88 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pembelanjaan & Dashboard</title>
+    <title>Sistem Belanja & Dasbor Analisis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f4f7f6; }
+        .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <h2 class="mb-4">Dashboard Kas & Belanja</h2>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center">Dasbor Logistik & Pembelanjaan</h2>
         
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card text-white bg-success mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Saldo Kas Saat Ini</h5>
-                        <h3 id="saldoText">Rp 0</h3>
+                        <h6 class="card-title">Saldo Kas Saat Ini</h6>
+                        <h3 id="saldoText">Loading...</h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card text-white bg-danger mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Total Hutang</h5>
-                        <h3 id="hutangText">Rp 0</h3>
+                        <h6 class="card-title">Total Pengeluaran & Hutang</h6>
+                        <h4 id="pengeluaranText">Out: Rp 0</h4>
+                        <small id="hutangText">Hutang: Rp 0</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card text-white bg-info mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Estimasi Bertahan</h5>
-                        <h4 id="runwayText">0 Hari</h4>
-                        <small id="runwayDetail">0 Minggu | 0 Bulan</small>
+                        <h6 class="card-title">Estimasi Bertahan (Runway)</h6>
+                        <h3 id="runwayText">- Hari</h3>
+                        <small id="runwayDetail">- Minggu | - Bulan</small>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-5">
-            <div class="card-header">Input Pembelanjaan Baru</div>
-            <div class="card-body">
-                <form id="formBelanja">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label>Jenis Barang</label>
-                            <input type="text" class="form-control" id="jenisBarang" required>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label>Berat (Kg)</label>
-                            <input type="number" step="0.01" class="form-control" id="berat" required>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label>Harga Satuan</label>
-                            <input type="number" class="form-control" id="hargaSatuan" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>Metode Pembayaran</label>
-                            <select class="form-control" id="metode" required>
-                                <option value="Cash">Cash</option>
-                                <option value="Transfer">Transfer</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>Status</label>
-                            <select class="form-control" id="status" required>
-                                <option value="Lunas">Lunas</option>
-                                <option value="Hutang">Hutang</option>
-                            </select>
-                        </div>
+        <div class="row">
+            <div class="col-md-5 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-dark text-white">Input Pembelanjaan Baru</div>
+                    <div class="card-body">
+                        <form id="formBelanja">
+                            <div class="mb-3">
+                                <label>Jenis Barang</label>
+                                <input type="text" class="form-control" id="jenisBarang" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label>Berat (Kg)</label>
+                                    <input type="number" step="0.01" class="form-control" id="berat" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label>Harga Satuan (Rp)</label>
+                                    <input type="number" class="form-control" id="hargaSatuan" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label>Metode</label>
+                                    <select class="form-select" id="metode">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Transfer">Transfer</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label>Status</label>
+                                    <select class="form-select" id="status">
+                                        <option value="Lunas">Lunas</option>
+                                        <option value="Hutang">Hutang</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="btnSubmit">Simpan Transaksi</button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
-                </form>
+                </div>
+            </div>
+
+            <div class="col-md-7 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-dark text-white">Grafik Tren Pengeluaran</div>
+                    <div class="card-body">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Ganti dengan URL Web App Apps Script Anda
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzyIkn0n1CormxrTMmEUShN_ER9zIo6jmp1Jf_B66UK-VwU2dF_5cplL6gIVcAdkIJz/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzyIkn0n1CormxrTMmEUShN_ER9zIo6jmp1Jf_B66UK-VwU2dF_5cplL6gIVcAdkIJz/exec'; // GANTI INI DENGAN URL APPS SCRIPT
+        let expenseChartInstance = null;
 
+        // Format angka ke Rupiah
+        const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+        // Fungsi Load Data & Hitung Analisis
+        function loadDashboard() {
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    let totalPemasukan = 0;
+                    let totalPengeluaran = 0;
+                    let totalHutang = 0;
+                    let firstDate = new Date();
+                    let chartLabels = [];
+                    let chartData = [];
+
+                    // Mengelompokkan data untuk grafik (berdasarkan tanggal)
+                    let expensesByDate = {};
+
+                    data.forEach(row => {
+                        let harga = parseFloat(row['Total Harga']) || 0;
+                        let dateObj = new Date(row['Tanggal']);
+                        if (dateObj < firstDate) firstDate = dateObj;
+
+                        if (row['Kategori'] === 'Pemasukan') {
+                            totalPemasukan += harga;
+                        } else {
+                            totalPengeluaran += harga;
+                            if (row['Status'] === 'Hutang') {
+                                totalHutang += harga;
+                            }
+                            
+                            // Siapkan data grafik
+                            let dateStr = dateObj.toLocaleDateString('id-ID');
+                            expensesByDate[dateStr] = (expensesByDate[dateStr] || 0) + harga;
+                        }
+                    });
+
+                    // Update Teks di Panel
+                    let saldo = totalPemasukan - totalPengeluaran;
+                    document.getElementById('saldoText').innerText = formatRp(saldo);
+                    document.getElementById('pengeluaranText').innerText = 'Out: ' + formatRp(totalPengeluaran);
+                    document.getElementById('hutangText').innerText = 'Hutang: ' + formatRp(totalHutang);
+
+                    // Kalkulasi Runway (Daya Tahan)
+                    let today = new Date();
+                    let diffTime = Math.abs(today - firstDate);
+                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    if(diffDays === 0) diffDays = 1; // Mencegah pembagian dengan nol
+
+                    let avgDailyExpense = totalPengeluaran / diffDays;
+                    let runwayDays = avgDailyExpense > 0 ? Math.floor(saldo / avgDailyExpense) : 0;
+                    
+                    if (saldo <= 0) runwayDays = 0;
+
+                    let runwayWeeks = Math.floor(runwayDays / 7);
+                    let runwayMonths = Math.floor(runwayDays / 30);
+
+                    document.getElementById('runwayText').innerText = runwayDays + ' Hari';
+                    document.getElementById('runwayDetail').innerText = `${runwayWeeks} Minggu | ${runwayMonths} Bulan`;
+
+                    // Render Grafik
+                    for (let date in expensesByDate) {
+                        chartLabels.push(date);
+                        chartData.push(expensesByDate[date]);
+                    }
+                    renderChart(chartLabels, chartData);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Fungsi Render Grafik Chart.js
+        function renderChart(labels, data) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if (expenseChartInstance) {
+                expenseChartInstance.destroy(); // Hapus grafik lama sebelum update
+            }
+            expenseChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pengeluaran Harian (Rp)',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // Event Listener untuk Submit Form
         document.getElementById('formBelanja').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const data = {
+            const btn = document.getElementById('btnSubmit');
+            btn.innerText = 'Menyimpan...';
+            btn.disabled = true;
+
+            const postData = {
                 jenis_barang: document.getElementById('jenisBarang').value,
                 berat: document.getElementById('berat').value,
                 harga_satuan: document.getElementById('hargaSatuan').value,
@@ -94,16 +210,23 @@
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify(data)
+                body: JSON.stringify(postData)
             }).then(response => response.json())
               .then(result => {
-                  alert('Data berhasil disimpan!');
+                  alert('Data belanja berhasil dicatat!');
                   document.getElementById('formBelanja').reset();
-                  // Panggil fungsi untuk update dashboard disini nantinya
-              }).catch(error => console.error('Error:', error));
+                  btn.innerText = 'Simpan Transaksi';
+                  btn.disabled = false;
+                  loadDashboard(); // Refresh dasbor otomatis
+              }).catch(error => {
+                  alert('Terjadi kesalahan. Coba lagi.');
+                  btn.innerText = 'Simpan Transaksi';
+                  btn.disabled = false;
+              });
         });
 
-        // Logika untuk fetch GET data dan menghitung grafik diletakkan di sini
+        // Load data pertama kali saat halaman dibuka
+        window.onload = loadDashboard;
     </script>
 </body>
 </html>
